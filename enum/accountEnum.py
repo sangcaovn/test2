@@ -1,6 +1,6 @@
 import enum
 
-class AccountType(enum.Enum):
+class AccountEnum(enum.Enum):
     Merchant="merchant"
     Personal="personal"
     Issuer="issuer"

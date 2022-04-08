@@ -1,6 +1,6 @@
 import enum
 
-class TransactionStatus(enum.Enum):
+class TransactionEnum(enum.Enum):
     Initialized="initialized"
     Confirmed="confirmed"
     Verified="verified"

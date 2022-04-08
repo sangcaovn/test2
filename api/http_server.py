@@ -1,9 +1,12 @@
 from http.server import BaseHTTPRequestHandler
 import json
-from enum.url_type import UrlType
+import uuid
+from database.account import merchant_sigup
 
 from ewallet import Ewallet
 from urllib.parse import urlparse
+
+from urlEnum import UrlEnum
 
 #Defining a HTTP request Handler class
 class ServiceHandler(BaseHTTPRequestHandler):
@@ -35,42 +38,47 @@ class ServiceHandler(BaseHTTPRequestHandler):
             self.send_response(404)
 		
     def do_POST(self):
-        if(self.path==UrlType.create_merchant.value):
+        if(self.path==UrlEnum.create_merchant.value):
             content_len = int(self.headers.get('Content-Length'))
             post_body = self.rfile.read(content_len)
             print ("post_body >>>>>>>>>",post_body)
-            Ewallet.create_merchant()
-        elif(self.path==UrlType.create_personal_issuer.value):
-            Ewallet.create_personal_issuer()
-        elif(self.path==UrlType.create_transaction.value):
-            Ewallet.create_transaction()
-        elif(self.path==UrlType.confirm_transaction.value):
-            Ewallet.confirm_transaction()
-        elif(self.path==UrlType.verify_transaction.value):
-            Ewallet.verify_transaction()
-        elif(self.path==UrlType.cancel_transaction.value):
-            Ewallet.cancel_transaction()
-        else:
-            path = urlparse(self.path).path
-            path=path.strip().split('/')
-            if(path[1]=="account" and path[3]=="topup"):
-                param=path[2]
-                Ewallet.get_token_by_account()
+            # Ewallet.create_merchant()
+            if post_body:
+                post_body["merchant_id"]=uuid.uuid4()
+                merchant_sigup(post_body)
             else:
                 self.send_response(404)
+        # elif(self.path==UrlEnum.create_personal_issuer.value):
+        #     Ewallet.create_personal_issuer()
+        # elif(self.path==UrlEnum.create_transaction.value):
+        #     Ewallet.create_transaction()
+        # elif(self.path==UrlEnum.confirm_transaction.value):
+        #     Ewallet.confirm_transaction()
+        # elif(self.path==UrlEnum.verify_transaction.value):
+        #     Ewallet.verify_transaction()
+        # elif(self.path==UrlEnum.cancel_transaction.value):
+        #     Ewallet.cancel_transaction()
+        # else:
+        #     path = urlparse(self.path).path
+        #     path=path.strip().split('/')
+        #     if(path[1]=="account" and path[3]=="topup"):
+        #         param=path[2]
+        #         Ewallet.get_token_by_account()
+        #     else:
+        #         self.send_response(404)
 
 
-        temp = self._set_headers()
-        key=0
-        # print (temp)
-        #getting key and value of the data dictionary
-        for key,value in {}.items():
-            pass
-        index = int(key)+1
-        {}[str(index)]=str(temp)
-        # print (str(temp))
-        #write the changes to the json file
-        with open("db.json",'w+') as file_data:
-            json.dump({},file_data)
+        # temp = self._set_headers()
+        # key=0
+        # # print (temp)
+        # #getting key and value of the data dictionary
+        # for key,value in {}.items():
+        #     pass
+        # index = int(key)+1
+        # {}[str(index)]=str(temp)
+        # # print (str(temp))
+        # #write the changes to the json file
+        # with open("db.json",'w+') as file_data:
+        #     json.dump({},file_data)
         #self.wfile.write(json.dumps(data[str(index)]).encode())
 	
