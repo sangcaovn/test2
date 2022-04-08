@@ -27,8 +27,8 @@ class ServiceHandler(BaseHTTPRequestHandler):
         # 6. tra lai kieu string
         return temp
 
-    def get_data_sent(self):
-        content_length = int(self.headers['Content-Length'])
+    def get_data_sent(self,field="Content-Length"):
+        content_length = int(self.headers[field])
         if content_length:
             input_json = self.rfile.read(content_length)
             input_data = json.loads(input_json)
@@ -38,6 +38,7 @@ class ServiceHandler(BaseHTTPRequestHandler):
     
     # Tao controller cho 1 url 
     def do_GET(self):
+        print ("do get -------")
         # Lay path cua phuong thuc do get
         path = urlparse(self.path).path
         # Lay ra dau /
@@ -72,7 +73,16 @@ class ServiceHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         if(self.path==UrlType.create_merchant.value):
             data=ServiceHandler.get_data_sent(self)
-            Ewallet.create_merchant(data)
+            if data:
+                res= Ewallet.create_merchant(data)
+                self.send_response(200)
+                self.send_header('Content-type', 'text/json')
+                self.end_headers()
+                output_json = json.dumps({"message":"saved ok"})
+                self.wfile.write(output_json.encode('utf-8'))
+            else:
+                self.send_response(404) 
+                
         elif(self.path==UrlType.create_personal_issuer.value):
             data=ServiceHandler.get_data_sent(self)
             if data:

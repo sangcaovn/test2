@@ -11,23 +11,48 @@ key = os.getenv('SECRET_KEY', "secret")
 conn = psycopg2.connect("dbname=test12_db user=admin password=admin port=5432")
 cur= conn.cursor()
 class Ewallet():
-    # Tao merchant moi /merchant/signup
-    def create_merchant(data):
 
-        id = uuid.uuid4()
-        account_id = data['account_id']
-        merchant_id = data['merchant_id']
-        merchant_name = data['merchant_name']
-        api_key = data['api_key']
-        merchant_url = data['merchant_url']
-        
+    def create_merchant(payload):
+        # statement for inserting a new row into the parts table
+        insert_merchant = """INSERT INTO merchant(merchant_id, 
+                                    merchant_name,api_key, 
+                                    merchant_url) VALUES(%s,%s,%s,%s) RETURNING id;"""
+        # statement for inserting a new row into the vendor_parts table
+        insert_account = """INSERT INTO account(account_id, amount, account_type, merchant_id) 
+                         VALUES(%s,%s,%s,%s)"""
+
+        try:
+            cur = conn.cursor()
+            # insert a new part
+            cur.execute(insert_merchant, (str(uuid.uuid4()),
+                    payload.get("merchantName"),str(uuid.uuid4()),payload.get("merchantUrl")))
+            # get the part id
+            merchant_id = cur.fetchone()[0]
+            print ("merchant_id>>>>>>>",merchant_id)
+            cur.execute(insert_account, (str(uuid.uuid4()),"0","merchant", merchant_id))
+
+            # commit changes
+            conn.commit()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+        finally:
+            if conn is not None:
+                conn.close()
+
+    # Tao merchant moi /merchant/signup
+    def create_merchant_bk(data):
         # Du lieu dang json duoc truyen vao tu server
-        command_insert = f"""INSERT INTO merchant (id,account_id,merchant_id,merchant_name,api_key,merchant_url) 
-                                        VALUES ('{id}','{account_id}','{merchant_id}','{merchant_name}','{api_key}','{merchant_url}') RETURNING merchant_id"""
+        command_insert = f"""INSERT INTO merchant (merchant_id, 
+                                    merchant_name,api_key, 
+                                    merchant_url) 
+                                    VALUES ('{str(uuid.uuid4())}', 
+                                    '{data.get("merchantName")}', 
+                                    '{str(uuid.uuid4())}', 
+                                    '{data.get("merchantUrl")}');"""
         cur.execute(command_insert)
         conn.commit()
+        return cur.rowcount
 
-        print ("run api create merchant account!")
     def get_api_key_by_account_id(account_id):
         # Create new account with type issuer
         command_insert = f""" SELECT m.api_key, a.account_type 
@@ -70,7 +95,6 @@ class Ewallet():
                             """
         cur.execute(command_insert)
         conn.commit()
-        print (cur.rowcount,"run api create personal or issuer account!")
         return cur.rowcount
 
     def get_token_by_account(account_id):
@@ -95,7 +119,6 @@ class Ewallet():
 
     # Tao transaction: /transaction/create
     def create_transaction(data):
-
         # Lay du lieu json tu http
         jwt_token = data['token']
         merchant_id = data['merchant_id']
