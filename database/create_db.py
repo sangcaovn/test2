@@ -1,19 +1,23 @@
-import sqlite3
+import psycopg2
 
-try:
-    sqliteConnection = sqlite3.connect('test2.db')
-    cursor = sqliteConnection.cursor()
-    print("Database created and Successfully Connected to SQLite")
+if __name__== "__create_db__":
 
-    sqlite_select_Query = "select sqlite_version();"
-    cursor.execute(sqlite_select_Query)
-    record = cursor.fetchall()
-    print("SQLite Database Version is: ", record)
-    cursor.close()
+    try:
+        postgresConnection = psycopg2.connect('dbname=test12_db user=admin password=admin port=5432')
+        cursor = postgresConnection.cursor()
+        print("Database created and Successfully Connected to Postgres")
 
-except sqlite3.Error as error:
-    print("Error while connecting to sqlite", error)
-finally:
-    if sqliteConnection:
-        sqliteConnection.close()
-        print("The SQLite connection is closed")
+        postgres_select_Query = "select postgres_version();"
+        cursor.execute(postgres_select_Query)
+        record = cursor.fetchall()
+        print("Postgres Database Version is: ", record)
+        cursor.close()
+
+    except psycopg2.Error as error:
+        print("Error while connecting to postgres", error)
+    finally:
+        if postgresConnection:
+            postgresConnection.close()
+            print("The Posgresql connection is closed")
+
+
