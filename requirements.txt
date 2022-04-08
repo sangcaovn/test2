@@ -1,6 +1,16 @@
+<<<<<<< HEAD
 cffi==1.15.0
 cryptography==36.0.2
 psycopg2==2.9.3
 pycparser==2.21
 PyJWT==2.3.0
 uuid==1.30
+=======
+certifi==2021.10.8
+charset-normalizer==2.0.12
+idna==3.3
+psycopg2==2.9.3
+PyJWT==2.3.0
+requests==2.27.1
+urllib3==1.26.9
+>>>>>>> cab084999412ef449688c83811ab24bc690acc17
