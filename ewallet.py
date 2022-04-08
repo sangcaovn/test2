@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import hashlib
 import json
 import os
@@ -10,10 +10,6 @@ import transEnum
 key = os.getenv('SECRET_KEY', "secret")
 conn = psycopg2.connect("dbname=test12_db user=admin password=admin port=5432")
 cur= conn.cursor()
-=======
-from database.account import add_new_account
->>>>>>> cab084999412ef449688c83811ab24bc690acc17
-
 class Ewallet():
     # Tao merchant moi /merchant/signup
     def create_merchant(data):
@@ -32,7 +28,6 @@ class Ewallet():
         conn.commit()
 
         print ("run api create merchant account!")
-<<<<<<< HEAD
     def get_api_key_by_account_id(account_id):
         # Create new account with type issuer
         command_insert = f""" SELECT m.api_key, a.account_type 
@@ -78,16 +73,6 @@ class Ewallet():
                 cur.execute(command_exe)
                 conn.commit()
                 account = cur.fetchone()
-
-=======
-        add_new_account()
-    def create_personal_issuer():
-        print ("run api create personal or issuer account!")
-    def get_token_by_account():
-        print ("run api get token by account!")
-    def account_topup():
->>>>>>> cab084999412ef449688c83811ab24bc690acc17
-        print ("run api topup money for account!")
 
     # Tao transaction: /transaction/create
     def create_transaction(data):

@@ -1,17 +1,10 @@
 from http.server import HTTPServer
-<<<<<<< HEAD
-from database import create_merchant_account
-from http_server import ServiceHandler
 # import create_table_account
 import uuid
+from api.http_server import ServiceHandler
 import jwt_data
 import psycopg2
 import os
-=======
-
-from api.http_server import ServiceHandler
->>>>>>> cab084999412ef449688c83811ab24bc690acc17
-
 if __name__== "__main__":
 
     #Server Initialization
