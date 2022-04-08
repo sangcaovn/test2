@@ -1,7 +1,9 @@
+from database.account import add_new_account
 
 class Ewallet():
     def create_merchant():
         print ("run api create merchant account!")
+        add_new_account()
     def create_personal_issuer():
         print ("run api create personal or issuer account!")
     def get_token_by_account():

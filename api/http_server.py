@@ -1,13 +1,9 @@
 from http.server import BaseHTTPRequestHandler
 import json
+from enum.url_type import UrlType
 
 from ewallet import Ewallet
-from urlEnum import UrlEnum
 from urllib.parse import urlparse
-
-#open json file and give it to data variable as a dictionary
-with open("db.json") as data_file:
-	data = json.load(data_file)
 
 #Defining a HTTP request Handler class
 class ServiceHandler(BaseHTTPRequestHandler):
@@ -34,22 +30,25 @@ class ServiceHandler(BaseHTTPRequestHandler):
             self.send_header('Content-type','text/json')
             self.end_headers()
             #prints all the keys and values of the json file
-            self.wfile.write(json.dumps(data).encode())
+            self.wfile.write(json.dumps({}).encode())
         else:
             self.send_response(404)
 		
     def do_POST(self):
-        if(self.path==UrlEnum.create_merchant.value):
+        if(self.path==UrlType.create_merchant.value):
+            content_len = int(self.headers.get('Content-Length'))
+            post_body = self.rfile.read(content_len)
+            print ("post_body >>>>>>>>>",post_body)
             Ewallet.create_merchant()
-        elif(self.path==UrlEnum.create_personal_issuer.value):
+        elif(self.path==UrlType.create_personal_issuer.value):
             Ewallet.create_personal_issuer()
-        elif(self.path==UrlEnum.create_transaction.value):
+        elif(self.path==UrlType.create_transaction.value):
             Ewallet.create_transaction()
-        elif(self.path==UrlEnum.confirm_transaction.value):
+        elif(self.path==UrlType.confirm_transaction.value):
             Ewallet.confirm_transaction()
-        elif(self.path==UrlEnum.verify_transaction.value):
+        elif(self.path==UrlType.verify_transaction.value):
             Ewallet.verify_transaction()
-        elif(self.path==UrlEnum.cancel_transaction.value):
+        elif(self.path==UrlType.cancel_transaction.value):
             Ewallet.cancel_transaction()
         else:
             path = urlparse(self.path).path
@@ -65,13 +64,13 @@ class ServiceHandler(BaseHTTPRequestHandler):
         key=0
         # print (temp)
         #getting key and value of the data dictionary
-        for key,value in data.items():
+        for key,value in {}.items():
             pass
         index = int(key)+1
-        data[str(index)]=str(temp)
+        {}[str(index)]=str(temp)
         # print (str(temp))
         #write the changes to the json file
         with open("db.json",'w+') as file_data:
-            json.dump(data,file_data)
+            json.dump({},file_data)
         #self.wfile.write(json.dumps(data[str(index)]).encode())
 	

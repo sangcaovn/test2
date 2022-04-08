@@ -1,5 +1,6 @@
 import enum
-class UrlEnum(enum.Enum):
+
+class UrlType(enum.Enum):
     create_merchant="/merchant/signup"
     create_personal_issuer="/account"
     create_transaction="/transaction/create"
