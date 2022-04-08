@@ -37,6 +37,25 @@ class Ewallet():
         cur.execute(command_insert)
         res=cur.fetchone()
         return res
+    def get_account_type_by_account_id(account_id):
+        # Create new account with type issuer
+        command_insert = f""" SELECT account_type 
+                            FROM account 
+                            where account_id='{account_id}' """
+        cur.execute(command_insert)
+        res=cur.fetchone()
+        return res
+
+
+    def do_topup(data):
+        command_insert = f"""UPDATE account 
+                            set amount='{data.get("amount")}'
+                            where account_id='{data.get("accountId")}'
+                            """
+        cur.execute(command_insert)
+        conn.commit()
+        return cur.rowcount>0
+
     # /account
     def create_personal_issuer(data):
         uuid_val = uuid.uuid4()

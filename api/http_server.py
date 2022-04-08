@@ -96,10 +96,37 @@ class ServiceHandler(BaseHTTPRequestHandler):
         else:
             path = urlparse(self.path).path
             path=path.strip().split('/')
-            if(path[1]=="account" and path[3]=="topup"):
-                param=path[2]
-                # Phai truyen vao user id de generate token
-                Ewallet.get_token_by_account(param)
+            if(path[1] and path[3] and path[1]=="account" and path[3]=="topup"):
+                if not path[2]:
+                    self.send_response(404)
+                    return
+
+                data=ServiceHandler.get_data_sent(self)
+                if not data:
+                    self.send_response(403)
+                    return
+
+                # check account do topup must be issuer
+                res=Ewallet.get_account_type_by_account_id(path[2])
+                if not res and res[0]!="issuer":
+                    self.send_response(403)
+                    self.send_header('Content-type', 'text/json')
+                    self.end_headers()
+                    output_json = json.dumps({"message":"failed"})
+                    self.wfile.write(output_json.encode('utf-8'))
+                    return
+                
+                # save to database
+                res=Ewallet.do_topup(data)
+                if res is False:
+                    self.send_response(501)
+                    return
+
+                self.send_response(200)
+                self.send_header('Content-type', 'text/json')
+                self.end_headers()
+                output_json = json.dumps({"message":"ok"})
+                self.wfile.write(output_json.encode('utf-8'))
             else:
                 self.send_response(404)
 	
